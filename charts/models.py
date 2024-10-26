@@ -19,7 +19,7 @@ class Chat(models.Model):
 class ChatInfo(models.Model):
     name = models.CharField(max_length=127,null=False, blank=True)
     chat = models.OneToOneField(to=Chat, on_delete=models.CASCADE, null=True, blank=True)
-
+    logo = models.ImageField(upload_to='chat_logo', null=True, blank=True)
 
 
 class UserInChat(models.Model):
