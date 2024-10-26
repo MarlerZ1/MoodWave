@@ -5,6 +5,11 @@
     <title>Title</title>
 </head>
 <body>
-text
+
+{% for chat in object_list %}
+    {{ chat.name }}
+
+{% endfor %}
+
 </body>
 </html>
