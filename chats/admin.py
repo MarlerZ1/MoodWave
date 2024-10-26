@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from charts.models import Chat, UserInChat, ChatInfo
+from chats.models import Chat, UserInChat, ChatInfo
 
 # Register your models here.
 

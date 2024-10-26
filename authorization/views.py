@@ -22,7 +22,7 @@ class UserLoginView(LoginView):
 
 
     def get_success_url(self):
-        return reverse_lazy("charts:chart_list")
+        return reverse_lazy("chats:chat_list")
 
 def logout_user(request):
     logout(request)

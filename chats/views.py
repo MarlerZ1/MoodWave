@@ -2,14 +2,14 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView
 
-from charts.models import Chat, UserInChat, CHAT
+from chats.models import Chat, UserInChat, CHAT
 
 
 # Create your views here.
 
 class ChartsView(ListView):
     model = Chat
-    template_name = 'charts/chart_list.html'
+    template_name = 'chats/chart_list.html'
 
     def get_queryset(self):
         queryset = super(ChartsView, self).get_queryset()
@@ -19,7 +19,7 @@ class ChartsView(ListView):
         for chat in queryset:
             if chat.format == CHAT:
                 try:
-                    chats += [{'name': chat.chatinfo.name, 'format': 'chat'}]
+                    chats += [{'name': chat.chatinfo.name, 'logo': chat.chatinfo.logo, 'format': 'chat'}]
                 except ObjectDoesNotExist as e:
                     raise e
             else:
