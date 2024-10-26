@@ -1,12 +1,11 @@
-from django.contrib import admin
 from django.urls import path
 
-from authorization.views import UserRegistrationView, UserLoginView, UserLogoutView
+from authorization.views import UserRegistrationView, UserLoginView, logout_user
 
-app_name = 'authorizetion'
+app_name = 'authorization'
 
 urlpatterns = [
     path('registration/', UserRegistrationView.as_view(), name='registration'),
     path('login/', UserLoginView.as_view(), name='login'),
-    path('logout/', UserLogoutView.as_view(), name='logout'),
+    path('logout/', logout_user, name='logout'),
 ]
