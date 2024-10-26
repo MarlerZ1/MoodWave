@@ -10,7 +10,13 @@
 <div class="container">
     <div class="row">
         <div class="col-6 mx-auto mt-2 shadow-sm rounded p-3">
-            text
+            <form action="">
+                {% csrf_token %}
+
+                {{ form.username }}
+
+
+            </form>
 
         </div>
     </div>
