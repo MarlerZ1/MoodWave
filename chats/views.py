@@ -1,4 +1,3 @@
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import ListView
 
@@ -26,10 +25,10 @@ class ChartsView(ListView):
                 users_in_chat = UserInChat.objects.filter(chat_id=chat.id)
 
                 if self.request.user.id == users_in_chat[0].user.id:
-                    another_user_name = users_in_chat[1].user.first_name + users_in_chat[1].user.last_name
+                    another_user = users_in_chat[1].user
                 else:
-                    another_user_name = users_in_chat[0].user.first_name + " " + users_in_chat[0].user.last_name
+                    another_user = users_in_chat[0].user
 
-                chats += [{'name': another_user_name, 'format': 'dialogue'}]
+                chats += [{'name': another_user.first_name + " " + another_user.last_name, 'logo': another_user.logo ,'format': 'dialogue'}]
 
         return chats
