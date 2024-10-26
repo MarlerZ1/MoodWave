@@ -26,3 +26,8 @@ class UserInChat(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     chat = models.ForeignKey(to=Chat, on_delete=models.CASCADE)
 
+class Message(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    chat = models.ForeignKey(to=Chat, on_delete=models.CASCADE)
+    text = models.TextField(null=False, blank=False)
+    sending_time = models.DateTimeField(auto_now_add=True)
