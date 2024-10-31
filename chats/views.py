@@ -61,7 +61,8 @@ class MessagesView(ListView):
         messages = [{
             'from_me': message.user_id == self.request.user.id,
             'name': message.user.first_name + " " + message.user.last_name,
-            'text': message.text
+            'text': message.text,
+            'logo': message.user.logo
         } for message in queryset]
 
         return messages
