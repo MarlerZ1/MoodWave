@@ -8,7 +8,12 @@ class TextInputForm(forms.Form):
         'class': "form-control",
         'rows':"3",
         'style':"resize: none; overflow-y: auto"
-    }))
+    }), required=False)
+
+    image = forms.ImageField(widget=forms.FileInput(attrs={
+        'class': "image_field"
+
+    }), required=False)
 
     class Meta:
         model = Message

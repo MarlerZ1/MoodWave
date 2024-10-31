@@ -8,6 +8,18 @@
 </head>
 <body>
 
+<style>
+.image_field {
+    width: 100%;
+    height: 100%;
+    background: rgba(150,225,150,0.5);
+    padding: 5% 25%;
+}
+
+.hidden{
+  display:none;
+}
+</style>
 
 <div class="container">
     <div class="row">
@@ -22,9 +34,14 @@
             </div>
 
             <div>
-                <form action="{% url 'chats:chat' chat_id %}" method="post">
+                <form action="{% url 'chats:chat' chat_id %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    {{ message_form.text }}
+                    <div id="text_input">
+                        {{ message_form.text }}
+                    </div>
+                    <div id="file_input" class="hidden" style="width: 100%; height: 10vh; border: 1px solid blue; position: relative">
+                        {{ message_form.image }}
+                    </div>
                     <div class="d-flex justify-content-center gap-3">
                         <button type="submit" class="btn btn-success btn-lg mt-3">
                             Отправить
@@ -36,7 +53,20 @@
     </div>
 </div>
 
+<script>
+    const text_input = document.getElementById("text_input");
+    const file_input = document.getElementById("file_input");
 
+    text_input.addEventListener('dragenter', function(){
+      text_input.className="hidden";
+      file_input.className="";
+    });
+
+    ['drop', 'dragleave'].forEach(eventName => file_input.addEventListener(eventName, function(){
+      text_input.className="";
+      file_input.className="hidden";
+    }));
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
