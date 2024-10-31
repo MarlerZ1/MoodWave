@@ -3,5 +3,9 @@
     <div class="card-body">
         <h6 class="card-title m-0">{{ message.name }}</h6>
         <p class="card-text m-0"> {% if message.text %} {{ message.text }} {% endif %}</p>
+
+        {% if message.image %}
+            <img src="{{ message.image.url }}" alt="" style="width: 100%; height: auto; border-radius: 16px;" >
+        {% endif %}
     </div>
 </div>

@@ -31,3 +31,8 @@ class Message(models.Model):
     chat = models.ForeignKey(to=Chat, on_delete=models.CASCADE)
     text = models.TextField(null=False, blank=False)
     sending_time = models.DateTimeField(auto_now_add=True)
+
+
+class AttachmentImage(models.Model):
+    message = models.ForeignKey(to=Message, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='attachment_image')

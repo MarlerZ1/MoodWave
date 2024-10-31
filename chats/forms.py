@@ -1,6 +1,6 @@
 from django import forms
 
-from chats.models import Message, Chat
+from chats.models import Message, Chat, AttachmentImage
 
 
 class TextInputForm(forms.Form):
@@ -15,13 +15,13 @@ class TextInputForm(forms.Form):
 
     }), required=False)
 
-    class Meta:
-        model = Message
-        fields = ('text')
-
-
     def save(self, **kwargs):
         data = self.cleaned_data
 
+
         message = Message(text=data['text'],user=kwargs["user"], chat=Chat.objects.filter(id=kwargs["chat_id"])[0])
         message.save()
+
+        if data['image']:
+            attachment_image = AttachmentImage(message=message, image=data['image'])
+            attachment_image.save()

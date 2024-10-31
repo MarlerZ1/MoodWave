@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import ListView
 
 from chats.forms import TextInputForm
-from chats.models import UserInChat, CHAT, Message, Chat
+from chats.models import UserInChat, CHAT, Message, Chat, AttachmentImage
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
 
 
@@ -62,7 +62,8 @@ class MessagesView(ListView):
             'from_me': message.user_id == self.request.user.id,
             'name': message.user.first_name + " " + message.user.last_name,
             'text': message.text,
-            'logo': message.user.logo
+            'logo': message.user.logo,
+            'image': images[0].image if (images:=AttachmentImage.objects.filter(message_id=message.id)) else None
         } for message in queryset]
 
         return messages
@@ -74,7 +75,7 @@ class MessagesView(ListView):
         return context
 
     def post(self, request, chat_id):
-        form = TextInputForm(data=request.POST)
+        form = TextInputForm(request.POST, request.FILES)
         if form.is_valid():
             form.save(user=self.request.user, chat_id=chat_id)
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
