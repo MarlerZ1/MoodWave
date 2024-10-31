@@ -26,9 +26,12 @@ class ChatsView(ListView):
         for chat in chats:
             message = Message.objects.filter(chat_id=chat.id).last()
 
+            message_text = message.text[:32] + "..." if message else None
+
+
             if chat.format == CHAT:
                 try:
-                    chats_info += [{'name': chat.chatinfo.name, 'logo': chat.chatinfo.logo, 'message': message, 'format': 'chat', 'chat_id': chat.id}]
+                    chats_info += [{'name': chat.chatinfo.name, 'logo': chat.chatinfo.logo, 'message_text': message_text, 'format': 'chat', 'chat_id': chat.id}]
                 except ObjectDoesNotExist as e:
                     raise e
             else:
@@ -43,7 +46,7 @@ class ChatsView(ListView):
                 else:
                     another_user = users_in_chat[0].user
 
-                chats_info += [{'name': another_user.first_name + " " + another_user.last_name, 'logo': another_user.logo ,'message': message, 'format': 'dialogue', 'chat_id': chat.id}]
+                chats_info += [{'name': another_user.first_name + " " + another_user.last_name, 'logo': another_user.logo ,'message_text': message_text, 'format': 'dialogue', 'chat_id': chat.id}]
 
         return chats_info
 
