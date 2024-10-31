@@ -12,13 +12,25 @@
 <div class="container">
     <div class="row">
         <div class="col-6 mx-auto mt-2 shadow-sm rounded p-3">
-            <div style="overflow-y: auto; height: 95vh" id="list">
+            <div style="overflow-y: auto; height: 80vh" id="list">
 
 
                 {% for message in object_list %}
-                {% include 'chats/chat/message.html' %}
+                  {% include 'chats/chat/message.html' %}
                 {% endfor %}
 
+            </div>
+
+            <div>
+                <form action="{% url 'chats:chat' chat_id %}" method="post">
+                    {% csrf_token %}
+                    {{ message_form.text }}
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="submit" class="btn btn-success btn-lg mt-3">
+                            Отправить
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -1,7 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.http import HttpResponseRedirect
 from django.views.generic import ListView
 
-from chats.models import UserInChat, CHAT, Message
+from chats.forms import TextInputForm
+from chats.models import UserInChat, CHAT, Message, Chat
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
 
 
@@ -63,3 +65,15 @@ class MessagesView(ListView):
         } for message in queryset]
 
         return messages
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(MessagesView, self).get_context_data()
+        context['message_form'] = TextInputForm()
+        context['chat_id'] = self.kwargs['chat_id']
+        return context
+
+    def post(self, request, chat_id):
+        form = TextInputForm(data=request.POST)
+        if form.is_valid():
+            form.save(user=self.request.user, chat_id=chat_id)
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
