@@ -1,0 +1,12 @@
+{% load static %}
+<div class="card mb-3">
+    <div class="row m-0 p-0">
+        {% if message.from_me %}
+            {% include 'chats/chat/message_parts/message_body.html'%}
+            {% include 'chats/chat/message_parts/person_image.html'%}
+        {% else %}
+            {% include 'chats/chat/message_parts/person_image.html'%}
+            {% include 'chats/chat/message_parts/message_body.html'%}
+        {% endif %}
+    </div>
+</div>

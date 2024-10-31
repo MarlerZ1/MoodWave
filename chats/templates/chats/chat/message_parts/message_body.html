@@ -1,0 +1,7 @@
+{% load static %}
+<div class="col-md-10">
+    <div class="card-body">
+        <h6 class="card-title m-0">{{ message.name }}</h6>
+        <p class="card-text m-0"> {% if message.text %} {{ message.text }} {% endif %}</p>
+    </div>
+</div>

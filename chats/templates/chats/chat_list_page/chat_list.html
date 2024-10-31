@@ -17,7 +17,9 @@
 
                 {% for chat in object_list %}
                 <!--                    {% if chat.logo%} <img src="{{ chat.logo.url }}" alt="logo" width="40%"> {% endif %} <h1> {{ chat.name }}</h1>-->
-                {% include 'chats/chat.html' %}
+                <a href="{% url 'chats:chat' chat.chat_id %}">
+                    {% include 'chats/chat_list_page/chat_element.html' %}
+                </a>
                 {% endfor %}
 
             </div>
