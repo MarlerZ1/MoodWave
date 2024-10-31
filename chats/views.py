@@ -1,5 +1,7 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
 from django.views.generic import ListView
 
 from chats.forms import TextInputForm
@@ -9,9 +11,10 @@ from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
 
 # Create your views here.
 
-class ChatsView(ListView):
+class ChatsView(LoginRequiredMixin, ListView):
     model = UserInChat
     template_name = 'chats/chat_list_page/chat_list.html'
+    login_url = reverse_lazy('authorization:login')
 
     def get_queryset(self):
         queryset = super(ChatsView, self).get_queryset().filter(user_id=self.request.user.id)
@@ -50,9 +53,10 @@ class ChatsView(ListView):
 
         return chats_info
 
-class MessagesView(ListView):
+class MessagesView(LoginRequiredMixin, ListView):
     model = Message
     template_name = 'chats/chat/chat.html'
+    login_url = reverse_lazy('authorization:login')
 
     def get_queryset(self):
         queryset = super(MessagesView, self).get_queryset()
