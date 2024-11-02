@@ -7,8 +7,8 @@
         </div>
         <div class="col-md-8">
             <div class="card-body">
-                <h5 class="card-title">{{ chat.name }}</h5>
-                <p class="card-text"> {{ chat.message_text }} </p>
+                <h5 class="card-title">{% if chat %} {{ chat.name }} {% else %} BasicCardTitlePlace {% endif %}</h5>
+                <p class="card-text"> {% if chat %} {{ chat.message_text }} {% else %} BasicCardTextPlace  {% endif %}</p>
             </div>
         </div>
     </div>

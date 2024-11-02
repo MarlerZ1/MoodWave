@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +13,7 @@
 <div class="container">
     <div class="row">
         <div class="col-6 mx-auto mt-2 shadow-sm rounded p-3">
-            <div style="overflow-y: auto; height: 95vh" id="list">
+            <div style="overflow-y: auto; height: 95vh" id="list" >
 
 
                 {% for chat in object_list %}
@@ -34,14 +35,29 @@
 
 
 <script>
+
+    alert("5")
     let socket = new WebSocket(`ws://${window.location.host}/chats/test/`)
 
     socket.onmessage = function (event){
-        console.log("WS")
-
+        let div = document.querySelector("#list")
         let djangoData = JSON.parse(event.data)
+        let standart_logo = "{% static 'img/default_logo.png' %}"
 
-        document.querySelector('#app').innerText = djangoData.value
+        div.innerHTML = ""
+        console.log(djangoData)
+        for (const i in djangoData.websocket_message){
+
+            newElement =  `{% include 'chats/chat_list_page/chat_element.html' %}`
+
+            chat = djangoData.websocket_message.at(i)
+
+            newElement = newElement.replace("BasicCardTitlePlace", chat.name)
+            newElement = newElement.replace("BasicCardTextPlace", chat.message_text)
+            newElement = newElement.replace(standart_logo, chat.logo)
+            div.innerHTML += newElement
+        }
+
     }
 </script>
 

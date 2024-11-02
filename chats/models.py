@@ -2,6 +2,7 @@ from django.db import models
 
 from authorization.models import User
 
+
 CHAT = 0
 DIALOGUE = 1
 
@@ -32,6 +33,12 @@ class Message(models.Model):
     text = models.TextField(null=False, blank=False)
     sending_time = models.DateTimeField(auto_now_add=True)
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super().save(force_insert, force_update, using, update_fields)
+
+        user_ids = [user_in_chat.user.id for user_in_chat in UserInChat.objects.filter(chat=self.chat)]
+        from chats.consumers import ChatsConsumer
+        ChatsConsumer.redefine_chats(user_ids)
 
 class AttachmentImage(models.Model):
     message = models.ForeignKey(to=Message, on_delete=models.CASCADE)
