@@ -2,7 +2,7 @@
 <div class="card mb-3">
     <div class="row g-0 m-2">
         <div class="col-md-2">
-            <img src="{% if chat.logo %}{{ chat.logo.url }} {% else %} {% static 'img/default_logo.png' %} {%endif%}"
+            <img src="{% if chat.logo %}{{ chat.logo }} {% else %} {% static 'img/default_logo.png' %} {%endif%}"
                  class="rounded" alt="..." width="96px" height="96px">
         </div>
         <div class="col-md-8">

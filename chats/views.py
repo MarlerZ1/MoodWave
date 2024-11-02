@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 
+from chats.business_logic import ChatsListPageBL
 from chats.forms import TextInputForm
 from chats.models import UserInChat, CHAT, Message, Chat, AttachmentImage
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
@@ -17,60 +18,8 @@ class ChatsView(LoginRequiredMixin, ListView):
     login_url = reverse_lazy('authorization:login')
 
     def get_queryset(self):
-        queryset = super(ChatsView, self).get_queryset().filter(user_id=self.request.user.id)
 
-        chats = []
-        for relationship in queryset:
-            chats += [relationship.chat]
-
-        couples = []
-
-        for chat in chats:
-            couples += [(chat, Message.objects.filter(chat_id=chat.id).last())]
-
-        couples = sorted(couples, key=lambda x: x[1].sending_time, reverse=True)
-
-        chats_info = []
-
-        for couple in couples:
-            chat = couple[0]
-            message = couple[1]
-
-            message_text = message.text[:32] + "..." if message else None
-
-
-            if chat.format == CHAT:
-                try:
-                    chats_info += [{
-                        'name': chat.chatinfo.name,
-                        'logo': chat.chatinfo.logo,
-                        'message_text': message_text,
-                        'format': 'chat',
-                        'chat_id': chat.id}
-                    ]
-                except ObjectDoesNotExist as e:
-                    raise e
-            else:
-
-                users_in_chat = UserInChat.objects.filter(chat_id=chat.id)
-
-                if len(users_in_chat) != 2:
-                    raise IncorrectDialoguePeopleNumber()
-
-                if self.request.user.id == users_in_chat[0].user.id:
-                    another_user = users_in_chat[1].user
-                else:
-                    another_user = users_in_chat[0].user
-
-                chats_info += [{
-                    'name': another_user.first_name + " " + another_user.last_name,
-                    'logo': another_user.logo ,
-                    'message_text': message_text,
-                    'format': 'dialogue',
-                    'chat_id': chat.id}
-                ]
-
-        return chats_info
+        return  ChatsListPageBL.get_chats(super(ChatsView, self).get_queryset(), self.request.user.id)
 
 class MessagesView(LoginRequiredMixin, ListView):
     model = Message
