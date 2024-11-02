@@ -32,5 +32,18 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
+
+<script>
+    let socket = new WebSocket(`ws://${window.location.host}/chats/test/`)
+
+    socket.onmessage = function (event){
+        console.log("WS")
+
+        let djangoData = JSON.parse(event.data)
+
+        document.querySelector('#app').innerText = djangoData.value
+    }
+</script>
+
 </body>
 </html>

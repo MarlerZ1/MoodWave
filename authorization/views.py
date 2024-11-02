@@ -1,10 +1,8 @@
-from lib2to3.fixes.fix_input import context
-
 from django.contrib.auth import get_user_model, logout
-from django.contrib.auth.views import LoginView, LogoutView
-from django.shortcuts import render, redirect
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import CreateView
 
 from authorization.forms import UserRegistrationForm, UserLoginForm
 
@@ -23,6 +21,8 @@ class UserLoginView(LoginView):
 
     def get_success_url(self):
         return reverse_lazy("chats:chat_list")
+    
+
 
 def logout_user(request):
     logout(request)
