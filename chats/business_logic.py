@@ -1,8 +1,24 @@
 from django.core.exceptions import ObjectDoesNotExist
 
-from chats.models import Message, CHAT, UserInChat
+from chats.models import Message, CHAT, UserInChat, AttachmentImage
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
 
+class MessagesPageBL:
+    @staticmethod
+    def get_messages(messages, chat_id, user_id):
+        users_in_chat = UserInChat.objects.filter(chat_id=chat_id)
+
+        messages = messages.filter(user_id__in=[user.user_id for user in users_in_chat], chat_id=chat_id)
+
+        messages = [{
+            'from_me': message.user_id == user_id,
+            'name': message.user.first_name + " " + message.user.last_name,
+            'text': message.text,
+            'logo': message.user.logo,
+            'image': images[0].image if (images := AttachmentImage.objects.filter(message_id=message.id)) else None
+        } for message in messages]
+
+        return messages
 
 
 class ChatsListPageBL:

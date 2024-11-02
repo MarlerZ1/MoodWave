@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 
-from chats.business_logic import ChatsListPageBL
+from chats.business_logic import ChatsListPageBL, MessagesPageBL
 from chats.forms import TextInputForm
 from chats.models import UserInChat, CHAT, Message, Chat, AttachmentImage
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
@@ -27,21 +27,8 @@ class MessagesView(LoginRequiredMixin, ListView):
     login_url = reverse_lazy('authorization:login')
 
     def get_queryset(self):
-        queryset = super(MessagesView, self).get_queryset()
 
-        users_in_chat = UserInChat.objects.filter(chat_id=self.kwargs['chat_id'])
-
-        queryset = queryset.filter(user_id__in=[user.user_id for user in users_in_chat], chat_id=self.kwargs['chat_id'])
-
-        messages = [{
-            'from_me': message.user_id == self.request.user.id,
-            'name': message.user.first_name + " " + message.user.last_name,
-            'text': message.text,
-            'logo': message.user.logo,
-            'image': images[0].image if (images:=AttachmentImage.objects.filter(message_id=message.id)) else None
-        } for message in queryset]
-
-        return messages
+        return MessagesPageBL.get_messages(super(MessagesView, self).get_queryset(), self.kwargs['chat_id'], self.request.user.id)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MessagesView, self).get_context_data()
