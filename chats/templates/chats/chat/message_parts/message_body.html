@@ -3,9 +3,12 @@
     <div class="card-body">
         <h6 class="card-title m-0 message_sender"> {% if message%} {{ message.name }} {% else %} senderBasic {% endif %}</h6>
         <p class="card-text m-0 message_body"> {% if message %}{% if message.text %} {{ message.text }} {% endif %}{% else %}messageBasic{%endif%}</p>
-
-        {% if message.image %}
-            <img src="{{ message.image.url }}" alt="" style="width: 100%; height: auto; border-radius: 16px;" >
+        {%if message %}
+            {% if message.image_url %}
+                <img src="{{ message.image_url }}" alt="" style="width: 100%; height: auto; border-radius: 16px;" >
+            {% endif %}
+        {% else %}
+            basicAttachmentImage
         {% endif %}
     </div>
 </div>

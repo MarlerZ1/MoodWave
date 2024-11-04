@@ -21,7 +21,7 @@ class MessagesPageBL:
             'name': message.user.first_name + " " + message.user.last_name,
             'text': message.text,
             'logo_url': message.user.logo.url if message.user.logo else None,
-            'image': images[0].image.url if (images := AttachmentImage.objects.filter(message_id=message.id)) else None
+            'image_url': images[0].image.url if (images := AttachmentImage.objects.filter(message_id=message.id)) else None
         }
 
 class ChatsListPageBL:

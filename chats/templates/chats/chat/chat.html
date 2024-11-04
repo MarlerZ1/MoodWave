@@ -86,7 +86,7 @@
     let to_me_msg = basic_msg.replace('BasicMessageTemplateText', `{% include 'chats/chat/message_parts/message_order/to_user.html'%}`)
 
     let default_logo = `{% static 'img/default_logo.png' %}`
-
+    let default_attachment_image = `{% include 'chats/chat/message_parts/message_order/message_body_image.html'%}`
 
     socket.onmessage = function (event){
         let div = document.querySelector("#list")
@@ -112,6 +112,15 @@
 
             if (message.logo_url)
                 new_msg = new_msg.replace(default_logo, message.logo_url)
+
+            if (message.image_url)
+            {
+                console.log("image is")
+                new_msg = new_msg.replace("basicAttachmentImage", default_attachment_image.replace(`src=""`,`src="${message.image_url}"`))
+            } else {
+                new_msg = new_msg.replace("basicAttachmentImage","")
+            }
+
 
             div.innerHTML += new_msg
 
