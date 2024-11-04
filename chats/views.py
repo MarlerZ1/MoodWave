@@ -28,7 +28,7 @@ class MessagesView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
 
-        return MessagesPageBL.get_messages(super(MessagesView, self).get_queryset(), self.kwargs['chat_id'], self.request.user.id)
+        return MessagesPageBL.get_formated_messages(super(MessagesView, self).get_queryset(), self.kwargs['chat_id'], self.request.user.id)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MessagesView, self).get_context_data()

@@ -5,21 +5,24 @@ from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
 
 class MessagesPageBL:
     @staticmethod
-    def get_messages(messages, chat_id, user_id):
+    def get_formated_messages(messages, chat_id, user_id):
         users_in_chat = UserInChat.objects.filter(chat_id=chat_id)
 
         messages = messages.filter(user_id__in=[user.user_id for user in users_in_chat], chat_id=chat_id)
 
-        messages = [{
-            'from_me': message.user_id == user_id,
-            'name': message.user.first_name + " " + message.user.last_name,
-            'text': message.text,
-            'logo': message.user.logo,
-            'image': images[0].image if (images := AttachmentImage.objects.filter(message_id=message.id)) else None
-        } for message in messages]
+        messages = [MessagesPageBL.get_formated_message(message, user_id) for message in messages]
 
         return messages
 
+    @staticmethod
+    def get_formated_message(message,user_id):
+        return {
+            'from_me': message.user_id == user_id,
+            'name': message.user.first_name + " " + message.user.last_name,
+            'text': message.text,
+            'logo_url': message.user.logo.url if message.user.logo else None,
+            'image': images[0].image.url if (images := AttachmentImage.objects.filter(message_id=message.id)) else None
+        }
 
 class ChatsListPageBL:
     @staticmethod

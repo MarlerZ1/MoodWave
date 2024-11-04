@@ -38,7 +38,9 @@ class Message(models.Model):
 
         user_ids = [user_in_chat.user.id for user_in_chat in UserInChat.objects.filter(chat=self.chat)]
         from chats.consumers import ChatsConsumer
+        from chats.consumers import MessagesConsumer
         ChatsConsumer.redefine_chats(user_ids)
+        MessagesConsumer.redefine_messages(self, user_ids)
 
 class AttachmentImage(models.Model):
     message = models.ForeignKey(to=Message, on_delete=models.CASCADE)

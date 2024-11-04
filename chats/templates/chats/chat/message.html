@@ -1,12 +1,14 @@
 {% load static %}
 <div class="card mb-3">
     <div class="row m-0 p-0">
-        {% if message.from_me %}
-            {% include 'chats/chat/message_parts/message_body.html'%}
-            {% include 'chats/chat/message_parts/person_image.html'%}
+        {% if message %}
+            {% if message.from_me %}
+                {% include 'chats/chat/message_parts/message_order/from_user.html'%}
+            {% else %}
+                {% include 'chats/chat/message_parts/message_order/to_user.html'%}
+            {% endif %}
         {% else %}
-            {% include 'chats/chat/message_parts/person_image.html'%}
-            {% include 'chats/chat/message_parts/message_body.html'%}
+            BasicMessageTemplateText
         {% endif %}
     </div>
 </div>

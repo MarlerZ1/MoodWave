@@ -1,5 +1,5 @@
 {% load static %}
-<div {% if message.from_me %} class="col-md-2 text-end" {% else %} class="col-md-1" {% endif %}>
-        <img src="{% if message.logo %}{{ message.logo.url }} {% else %} {% static 'img/default_logo.png' %} {%endif%}"
+<div {% if message %} {% if message.from_me %} class="col-md-2 text-end" {% else %} class="col-md-1" {% endif %} {% else %} class="basicClass" {% endif%}>
+        <img src="{% if message %}{% if message.logo_url %}{{ message.logo_url }}{% else %}{% static 'img/default_logo.png' %}{%endif%}{% else %}{% static 'img/default_logo.png' %}{% endif %}"
              class="rounded" alt="..." width="48px" height="48px" style="margin-left: auto; margin-right: 0; margin-top: 8px">
 </div>
