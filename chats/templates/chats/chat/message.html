@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card mb-3">
+<div class="card mb-3 message_block  {% if message %}{% if message.from_me %}from_me {%else%} not_from_me {%endif%} {%else%} messageSender{%endif%}" id="message_n_{% if message %}{{ message.message_id}}{% else %}messageId{% endif %}">
     <div class="row m-0 p-0">
         {% if message %}
             {% if message.from_me %}

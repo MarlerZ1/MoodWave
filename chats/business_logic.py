@@ -17,6 +17,8 @@ class MessagesPageBL:
     @staticmethod
     def get_formated_message(message,user_id):
         return {
+            'message_type': 'new_message',
+            'message_id': message.id,
             'from_me': message.user_id == user_id,
             'name': message.user.first_name + " " + message.user.last_name,
             'text': message.text,

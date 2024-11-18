@@ -63,6 +63,25 @@
         crossorigin="anonymous"></script>
 
 <script>
+    delete_message_onclick_adding = function(div_message_block)
+    {
+        socket.send(JSON.stringify({
+               "message_type": "delete_message",
+               "message_id": div_message_block.id.replace("message_n_","")
+            }))
+    }
+
+
+    $('.from_me').click(function(event) {
+        var div_message_block = $(event.target).closest(".message_block")[0]
+        delete_message_onclick_adding(div_message_block)
+    });
+
+
+
+</script>
+
+<script>
     const text_input = document.getElementById("text_input");
     const file_input = document.getElementById("file_input");
 
@@ -88,41 +107,66 @@
     let default_logo = `{% static 'img/default_logo.png' %}`
     let default_attachment_image = `{% include 'chats/chat/message_parts/message_order/message_body_image.html'%}`
 
-    socket.onmessage = function (event){
+
+    add_new_message = function(message) {
         let div = document.querySelector("#list")
+        let new_msg = ""
+
+        if (message.from_me){
+            new_msg = from_me_msg
+            new_msg = new_msg.replace("basicClass", "col-md-2 text-end")
+            new_msg = new_msg.replace("basicRef", "img/default_logo.png")
+            new_msg = new_msg.replace("messageSender", "from_me")
+        } else {
+            new_msg = to_me_msg
+            new_msg = new_msg.replace("basicRef", "img/default_logo.png")
+            new_msg = new_msg.replace("basicClass", "col-md-1")
+            new_msg = new_msg.replace("messageSender", "not_from_me")
+        }
+
+        new_msg = new_msg.replace("messageId", message.message_id)
+        new_msg = new_msg.replace("senderBasic", message.name)
+        new_msg = new_msg.replace("messageBasic", message.text)
+
+        if (message.logo_url)
+            new_msg = new_msg.replace(default_logo, message.logo_url)
+
+        if (message.image_url)
+        {
+            new_msg = new_msg.replace("basicAttachmentImage", default_attachment_image.replace(`src=""`,`src="${message.image_url}"`))
+        } else {
+            new_msg = new_msg.replace("basicAttachmentImage","")
+        }
+        div.innerHTML += new_msg
+
+        added_object = $("#message_n_" + message.message_id)
+        added_object.click(function(){
+            delete_message_onclick_adding(added_object[0])
+        })
+    }
+
+    delete_message = function(message_id)
+    {
+        document.querySelector(`#message_n_${message_id}`).outerHTML = ""
+    }
+
+
+    socket.onmessage = function (event){
+
         let djangoData = JSON.parse(event.data)
-        console.log("WS PAGE RELOAD SIGNAL")
+        message = djangoData.websocket_message
 
-            message = djangoData.websocket_message
-            console.log(message.from_me)
-            let new_msg = ""
+        console.log(message)
 
-            if (message.from_me){
-                new_msg = from_me_msg
-                new_msg = new_msg.replace("basicClass", "col-md-2 text-end")
-                new_msg = new_msg.replace("basicRef", "img/default_logo.png")
-            } else {
-                new_msg = to_me_msg
-                new_msg = new_msg.replace("basicRef", "img/default_logo.png")
-                new_msg = new_msg.replace("basicClass", "col-md-1")
-            }
+        switch(message.message_type){
+            case "new_message":
+                add_new_message(message)
+                break;
+            case "delete_message":
+                delete_message(message.message_id)
+                break;
+        }
 
-            new_msg = new_msg.replace("senderBasic", message.name)
-            new_msg = new_msg.replace("messageBasic", message.text)
-
-            if (message.logo_url)
-                new_msg = new_msg.replace(default_logo, message.logo_url)
-
-            if (message.image_url)
-            {
-                console.log("image is")
-                new_msg = new_msg.replace("basicAttachmentImage", default_attachment_image.replace(`src=""`,`src="${message.image_url}"`))
-            } else {
-                new_msg = new_msg.replace("basicAttachmentImage","")
-            }
-
-
-            div.innerHTML += new_msg
 
     }
 </script>
@@ -131,7 +175,7 @@
     let message_form = $("#message_form")
 
     $('#submit_btn').click(function () {
-        let formData = new FormData(document.getElementById("message_form"))
+        let formData = new FormData(message_form[0])
         let allfiles = message_form.find('input[name="fileImage"]');
         if (allfiles[0]){
             for(var i = 0; i < allfiles[0].files.length; i++){

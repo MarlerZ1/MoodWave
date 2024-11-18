@@ -1,6 +1,6 @@
 import json
 
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 from django.core.exceptions import ObjectDoesNotExist
@@ -59,6 +59,23 @@ class MessagesConsumer(AsyncWebsocketConsumer):
                     "text": message
                 },
             )
+
+
+    async def receive(self, text_data=None, bytes_data=None):
+        text_data_json = json.loads(text_data)
+        if text_data_json["message_type"] == "delete_message":
+            try:
+                message_object = await sync_to_async(Message.objects.get)(id=int(text_data_json["message_id"]), user_id=self.scope["user"].id)
+                await sync_to_async(message_object.delete)()
+
+                await self.send(text_data=json.dumps({"websocket_message": {
+                    "message_type": "delete_message",
+                    "message_id": text_data_json["message_id"]
+                }}))
+            except Message.DoesNotExist as e:
+                print(e)
+
+
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({"websocket_message": event["text"]}))
