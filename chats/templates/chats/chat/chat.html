@@ -63,43 +63,6 @@
         crossorigin="anonymous"></script>
 
 <script>
-    delete_message_onclick_adding = function(div_message_block)
-    {
-        socket.send(JSON.stringify({
-               "message_type": "delete_message",
-               "message_id": div_message_block.id.replace("message_n_","")
-            }))
-    }
-
-
-    $('.from_me').click(function(event) {
-        var div_message_block = $(event.target).closest(".message_block")[0]
-        delete_message_onclick_adding(div_message_block)
-    });
-
-
-
-</script>
-
-<script>
-    const text_input = document.getElementById("text_input");
-    const file_input = document.getElementById("file_input");
-
-    text_input.addEventListener('dragenter', function(){
-      text_input.className="hidden";
-      file_input.className="";
-    });
-
-    ['drop', 'dragleave'].forEach(eventName => file_input.addEventListener(eventName, function(){
-      text_input.className="";
-      file_input.className="hidden";
-    }));
-</script>
-<script>
-
-
-    let socket = new WebSocket(`ws://${window.location.host}/chats/messages/add_new_message`)
-
     let basic_msg = `{% include 'chats/chat/message.html'%}`
     let from_me_msg = basic_msg.replace('BasicMessageTemplateText', `{% include 'chats/chat/message_parts/message_order/from_user.html'%}`)
     let to_me_msg = basic_msg.replace('BasicMessageTemplateText', `{% include 'chats/chat/message_parts/message_order/to_user.html'%}`)
@@ -108,94 +71,19 @@
     let default_attachment_image = `{% include 'chats/chat/message_parts/message_order/message_body_image.html'%}`
 
 
-    add_new_message = function(message) {
-        let div = document.querySelector("#list")
-        let new_msg = ""
-
-        if (message.from_me){
-            new_msg = from_me_msg
-            new_msg = new_msg.replace("basicClass", "col-md-2 text-end")
-            new_msg = new_msg.replace("basicRef", "img/default_logo.png")
-            new_msg = new_msg.replace("messageSender", "from_me")
-        } else {
-            new_msg = to_me_msg
-            new_msg = new_msg.replace("basicRef", "img/default_logo.png")
-            new_msg = new_msg.replace("basicClass", "col-md-1")
-            new_msg = new_msg.replace("messageSender", "not_from_me")
-        }
-
-        new_msg = new_msg.replace("messageId", message.message_id)
-        new_msg = new_msg.replace("senderBasic", message.name)
-        new_msg = new_msg.replace("messageBasic", message.text)
-
-        if (message.logo_url)
-            new_msg = new_msg.replace(default_logo, message.logo_url)
-
-        if (message.image_url)
-        {
-            new_msg = new_msg.replace("basicAttachmentImage", default_attachment_image.replace(`src=""`,`src="${message.image_url}"`))
-        } else {
-            new_msg = new_msg.replace("basicAttachmentImage","")
-        }
-        div.innerHTML += new_msg
-
-        added_object = $("#message_n_" + message.message_id)
-        added_object.click(function(){
-            delete_message_onclick_adding(added_object[0])
-        })
-    }
-
-    delete_message = function(message_id)
-    {
-        document.querySelector(`#message_n_${message_id}`).outerHTML = ""
-    }
-
-
-    socket.onmessage = function (event){
-
-        let djangoData = JSON.parse(event.data)
-        message = djangoData.websocket_message
-
-        console.log(message)
-
-        switch(message.message_type){
-            case "new_message":
-                add_new_message(message)
-                break;
-            case "delete_message":
-                delete_message(message.message_id)
-                break;
-        }
-
-
-    }
+    let chat_new_message_url = "{% url 'chats:chat' chat_id %}"
 </script>
 
-<script>
-    let message_form = $("#message_form")
 
-    $('#submit_btn').click(function () {
-        let formData = new FormData(message_form[0])
-        let allfiles = message_form.find('input[name="fileImage"]');
-        if (allfiles[0]){
-            for(var i = 0; i < allfiles[0].files.length; i++){
-                formData.append("file_"+i, allfiles[0].files[i]);
-            }
-        }
+<script src="{% static 'js/chat_page/socket_connect.js'%}"> </script>
+<script src="{% static 'js/chat_page/delete_message_onclick_adding.js'%}"></script>
+<script src="{% static 'js/chat_page/file_input.js'%}"></script>
+<script src="{% static 'js/chat_page/add_new_message.js'%}"></script>
+<script src="{% static 'js/chat_page/on_message_get.js'%}"></script>
+<script src="{% static 'js/chat_page/message_send.js'%}"></script>
 
-        $.ajax({
-            type: "post",
-            url: "{% url 'chats:chat' chat_id %}",
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function(data){},
-        });
-        console.log(message_form)
-        document.getElementById("id_text").value = ""
-    });
 
-</script>
+
 
 
 </body>
