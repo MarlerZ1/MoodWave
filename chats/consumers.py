@@ -3,11 +3,10 @@ import json
 from asgiref.sync import async_to_sync, sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
-from django.core.exceptions import ObjectDoesNotExist
 
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
-from chats.models import UserInChat, Message, CHAT
-from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
+from chats.forms import TextInputForm
+from chats.models import UserInChat, Message
 
 
 class ChatsConsumer(AsyncWebsocketConsumer):
@@ -74,7 +73,17 @@ class MessagesConsumer(AsyncWebsocketConsumer):
                 }}))
             except Message.DoesNotExist as e:
                 print(e)
+        elif text_data_json["message_type"] == "send_message":
+            chat_id = text_data_json["chat_id"]
 
+            form_data = text_data_json.get('form_data')
+
+            form = TextInputForm(form_data)
+            form["image"].initial = text_data_json["images_data"]
+
+
+            if form.is_valid():
+                await sync_to_async(form.save)(user_id=self.scope["user"].id, chat_id=chat_id)
 
 
     async def chat_message(self, event):

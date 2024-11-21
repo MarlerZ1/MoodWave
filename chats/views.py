@@ -1,13 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
 
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
 from chats.forms import TextInputForm
-from chats.models import UserInChat, CHAT, Message, Chat, AttachmentImage
-from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
+from chats.models import UserInChat, Message
 
 
 # Create your views here.
@@ -35,9 +32,3 @@ class MessagesView(LoginRequiredMixin, ListView):
         context['message_form'] = TextInputForm()
         context['chat_id'] = self.kwargs['chat_id']
         return context
-
-    def post(self, request, chat_id):
-        form = TextInputForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save(user=self.request.user, chat_id=chat_id)
-        return HttpResponseRedirect(request.META['HTTP_REFERER'])

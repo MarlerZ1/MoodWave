@@ -2,21 +2,38 @@ let message_form = $("#message_form")
 
 $('#submit_btn').click(function () {
     let formData = new FormData(message_form[0])
-    let allfiles = message_form.find('input[name="fileImage"]');
-    if (allfiles[0]){
-        for(var i = 0; i < allfiles[0].files.length; i++){
-            formData.append("file_"+i, allfiles[0].files[i]);
+    const formObject = Object.fromEntries(formData.entries());
+
+    let images = [];
+    let promises = [];
+
+    const reader = new FileReader();
+
+    for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+
+            promise = new Promise((resolve, reject) => {
+                reader.onload = () => {
+                    resolve(reader.result)
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(value);
+            }).then((image) => {
+                images.push(image);
+            });
+
+            promises.push(promise)
         }
     }
 
-    $.ajax({
-        type: "post",
-        url: chat_new_message_url,
-        data: formData,
-        contentType: false,
-        processData: false,
-        success: function(data){},
-    });
+     Promise.all(promises).then(() => {
+        socket.send(JSON.stringify({
+            "message_type": "send_message",
+            "chat_id": chat_id,
+            form_data: formObject,
+            images_data: images
+         }));
+     })
 
     document.getElementById("id_text").value = ""
 });
