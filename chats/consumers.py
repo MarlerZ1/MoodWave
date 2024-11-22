@@ -61,42 +61,25 @@ class MessagesConsumer(AsyncWebsocketConsumer):
             )
 
 
+
+    async def delete_message(self, text_data_json):
+        try:
+            await ChatsListPageBL.delete_message(text_data_json, self.scope["user"].id)
+        except Message.DoesNotExist as e:
+            return
+
+        await self.send(text_data=json.dumps({"websocket_message": {
+            "message_type": "delete_message",
+            "message_id": text_data_json["message_id"]
+        }}))
+
+
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
         if text_data_json["message_type"] == "delete_message":
-            try:
-                message_object = await sync_to_async(Message.objects.get)(id=int(text_data_json["message_id"]), user_id=self.scope["user"].id)
-                await sync_to_async(message_object.delete)()
-
-                await self.send(text_data=json.dumps({"websocket_message": {
-                    "message_type": "delete_message",
-                    "message_id": text_data_json["message_id"]
-                }}))
-            except Message.DoesNotExist as e:
-                print(e)
+            await self.delete_message(text_data_json)
         elif text_data_json["message_type"] == "send_message":
-            chat_id = text_data_json["chat_id"]
-
-            try:
-                user_in_chat = UserInChat.objects.filter(user_id=self.scope["user"].id)
-                chats = []
-                for relationship in user_in_chat:
-                    chats += [relationship.chat]
-
-                if chat_id not in chats:
-                    raise UserToChatAccessError()
-            except UserToChatAccessError as e:
-                print(e)
-                return
-
-            form_data = text_data_json.get('form_data')
-
-            form = TextInputForm(form_data)
-            form["image"].initial = text_data_json["images_data"]
-
-
-            if form.is_valid():
-                await sync_to_async(form.save)(user_id=self.scope["user"].id, chat_id=chat_id)
+            await  ChatsListPageBL.send_message(text_data_json)
 
 
     async def chat_message(self, event):

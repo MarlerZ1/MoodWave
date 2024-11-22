@@ -1,7 +1,10 @@
+from asgiref.sync import sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
 
+from chats.forms import TextInputForm
 from chats.models import Message, CHAT, UserInChat, AttachmentImage
-from common.exceptions.exceptions import IncorrectDialoguePeopleNumber
+from common.exceptions.exceptions import IncorrectDialoguePeopleNumber, UserToChatAccessError
+
 
 class MessagesPageBL:
     @staticmethod
@@ -27,6 +30,39 @@ class MessagesPageBL:
         }
 
 class ChatsListPageBL:
+    @staticmethod
+    async def delete_message(text_data_json, user_id):
+        try:
+            message_object = await sync_to_async(Message.objects.get)(id=int(text_data_json["message_id"]), user_id=user_id)
+            await sync_to_async(message_object.delete)()
+        except Message.DoesNotExist as e:
+            print(e)
+            raise e
+
+    @staticmethod
+    async def send_message(self, text_data_json):
+        chat_id = text_data_json["chat_id"]
+
+        try:
+            user_in_chat = UserInChat.objects.filter(user_id=self.scope["user"].id)
+            chats = []
+            for relationship in user_in_chat:
+                chats += [relationship.chat]
+
+            if chat_id not in chats:
+                raise UserToChatAccessError()
+        except UserToChatAccessError as e:
+            print(e)
+            return
+
+        form_data = text_data_json.get('form_data')
+
+        form = TextInputForm(form_data)
+        form["image"].initial = text_data_json["images_data"]
+
+        if form.is_valid():
+            await sync_to_async(form.save)(user_id=self.scope["user"].id, chat_id=chat_id)
+
     @staticmethod
     def get_chats(user_in_chat, auth_user_id):
         user_in_chat = user_in_chat.filter(user_id=auth_user_id)
