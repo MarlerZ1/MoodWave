@@ -7,6 +7,7 @@ from channels.layers import get_channel_layer
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
 from chats.forms import TextInputForm
 from chats.models import UserInChat, Message
+from common.exceptions.exceptions import UserToChatAccessError
 
 
 class ChatsConsumer(AsyncWebsocketConsumer):
@@ -75,6 +76,18 @@ class MessagesConsumer(AsyncWebsocketConsumer):
                 print(e)
         elif text_data_json["message_type"] == "send_message":
             chat_id = text_data_json["chat_id"]
+
+            try:
+                user_in_chat = UserInChat.objects.filter(user_id=self.scope["user"].id)
+                chats = []
+                for relationship in user_in_chat:
+                    chats += [relationship.chat]
+
+                if chat_id not in chats:
+                    raise UserToChatAccessError()
+            except UserToChatAccessError as e:
+                print(e)
+                return
 
             form_data = text_data_json.get('form_data')
 
