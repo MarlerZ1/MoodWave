@@ -26,12 +26,12 @@ add_new_message = function(message) {
     else
         new_msg = new_msg.replace("basicAttachmentImage","")
 
-    div.innerHTML += new_msg
+    div.insertAdjacentHTML("beforeend", new_msg)
 
     added_object = $("#message_n_" + message.message_id)
 
     added_object.click(function(){
-        delete_message_onclick_adding(added_object[0])
+        delete_message_onclick_adding(this)
     })
 
 }
