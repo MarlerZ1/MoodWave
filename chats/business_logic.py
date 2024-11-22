@@ -40,20 +40,19 @@ class ChatsListPageBL:
             raise e
 
     @staticmethod
-    async def send_message(self, text_data_json):
+    def send_message(text_data_json, user_id):
         chat_id = text_data_json["chat_id"]
 
         try:
-            user_in_chat = UserInChat.objects.filter(user_id=self.scope["user"].id)
-            chats = []
+            user_in_chat = UserInChat.objects.filter(user_id=user_id)
+            chat_ids = []
             for relationship in user_in_chat:
-                chats += [relationship.chat]
+                chat_ids += [relationship.chat.id]
 
-            if chat_id not in chats:
+            if chat_id not in chat_ids:
                 raise UserToChatAccessError()
         except UserToChatAccessError as e:
-            print(e)
-            return
+            print(e, user_id)
 
         form_data = text_data_json.get('form_data')
 
@@ -61,7 +60,7 @@ class ChatsListPageBL:
         form["image"].initial = text_data_json["images_data"]
 
         if form.is_valid():
-            await sync_to_async(form.save)(user_id=self.scope["user"].id, chat_id=chat_id)
+            form.save(user_id=user_id, chat_id=chat_id)
 
     @staticmethod
     def get_chats(user_in_chat, auth_user_id):

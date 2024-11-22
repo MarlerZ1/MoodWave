@@ -79,7 +79,7 @@ class MessagesConsumer(AsyncWebsocketConsumer):
         if text_data_json["message_type"] == "delete_message":
             await self.delete_message(text_data_json)
         elif text_data_json["message_type"] == "send_message":
-            await  ChatsListPageBL.send_message(text_data_json)
+            await sync_to_async(ChatsListPageBL.send_message)(text_data_json, self.scope["user"].id)
 
 
     async def chat_message(self, event):

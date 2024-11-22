@@ -1,6 +1,9 @@
 class IncorrectDialoguePeopleNumber(Exception):
-    """В диалоге должно быть ровно 2 человека"""
+    def __str__(self):
+        return """В диалоге должно быть ровно 2 человека"""
 
 
 class UserToChatAccessError(Exception):
-    """У пользователя нет доступа к этому чату"""
+    def __str__(self):
+        return """У пользователя нет доступа к этому чату"""
+
