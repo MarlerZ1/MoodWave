@@ -13,7 +13,7 @@
         <div class="col-6 mx-auto mt-2 shadow-sm rounded p-3">
 
 
-            <form action="{% url 'authorization:registration' %}" method="post">
+            <form action="{% url 'authorization:web:registration' %}" method="post">
                 {% csrf_token %}
                 <label class="small mb-1" for="{{ form.first_name.id_for_label }}">Имя</label>
                 {{ form.first_name }}

@@ -16,7 +16,7 @@
         <div class="col-6 mx-auto mt-2 shadow-sm rounded p-3">
 
 
-            <form action="{% url 'authorization:login' %}" method="post">
+            <form action="{% url 'authorization:web:login' %}" method="post">
                 {% csrf_token %}
                 <label class="small mb-1" for="{{ form.username.id_for_label }}">Ник</label>
                 {{ form.username }}

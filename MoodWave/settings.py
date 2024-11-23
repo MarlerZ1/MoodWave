@@ -13,6 +13,9 @@ import os
 
 from dotenv import load_dotenv
 from pathlib import Path
+
+from common.utils.template_finder import find_templates_dirs
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,7 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authorization',
     'chats',
-    'api'
 
 ]
 
@@ -62,10 +64,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'MoodWave.urls'
 
+additional_templates_dirs = find_templates_dirs(BASE_DIR)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': additional_templates_dirs,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
