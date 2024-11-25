@@ -71,7 +71,7 @@
     let default_attachment_image = `{% include 'chats/chat/message_parts/message_order/message_body_image.html'%}`
 
 
-    let chat_new_message_url = "{% url 'chats:chat' chat_id %}"
+    let chat_new_message_url = "{% url 'chats:web:chat' chat_id %}"
     let chat_id = {{chat_id}}
 </script>
 

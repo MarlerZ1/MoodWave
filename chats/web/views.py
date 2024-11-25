@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView
 
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
-from chats.forms import TextInputForm
+from chats.web.forms import TextInputForm
 from chats.models import UserInChat, Message
 
 
@@ -12,7 +12,7 @@ from chats.models import UserInChat, Message
 class ChatsView(LoginRequiredMixin, ListView):
     model = UserInChat
     template_name = 'chats/chat_list_page/chat_list.html'
-    login_url = reverse_lazy('authorization:login')
+    login_url = reverse_lazy('authorization:web:login')
 
     def get_queryset(self):
 
@@ -21,7 +21,7 @@ class ChatsView(LoginRequiredMixin, ListView):
 class MessagesView(LoginRequiredMixin, ListView):
     model = Message
     template_name = 'chats/chat/chat.html'
-    login_url = reverse_lazy('authorization:login')
+    login_url = reverse_lazy('authorization:web:login')
 
     def get_queryset(self):
 

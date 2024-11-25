@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from authorization.api.serializers import UserRegistrationSerializer
 
 
-class RegisterUserView(APIView):
+class RegisterUserApiView(APIView):
     def post(self, request, *args, **kwargs):
        serializer = UserRegistrationSerializer(data=request.data)
 

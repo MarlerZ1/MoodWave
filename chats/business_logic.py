@@ -1,7 +1,7 @@
 from asgiref.sync import sync_to_async
 from django.core.exceptions import ObjectDoesNotExist
 
-from chats.forms import TextInputForm
+from chats.web.forms import TextInputForm
 from chats.models import Message, CHAT, UserInChat, AttachmentImage
 from common.exceptions.exceptions import IncorrectDialoguePeopleNumber, UserToChatAccessError
 

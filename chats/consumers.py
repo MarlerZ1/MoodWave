@@ -5,9 +5,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.layers import get_channel_layer
 
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
-from chats.forms import TextInputForm
 from chats.models import UserInChat, Message
-from common.exceptions.exceptions import UserToChatAccessError
 
 
 class ChatsConsumer(AsyncWebsocketConsumer):

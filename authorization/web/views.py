@@ -19,9 +19,9 @@ class UserLoginView(LoginView):
     form_class = UserLoginForm
 
     def get_success_url(self):
-        return reverse_lazy("chats:chat_list")
+        return reverse_lazy("chats:web:chat_list")
 
 
 def logout_user(request):
     logout(request)
-    return redirect(reverse('authorization:login'))
+    return redirect(reverse('authorization:web:login'))
