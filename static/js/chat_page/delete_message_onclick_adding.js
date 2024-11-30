@@ -15,5 +15,6 @@ $('.from_me').click(function(event) {
 
 delete_message_handler = function(message_id)
 {
+    console.log(message_id)
     document.querySelector(`#message_n_${message_id}`).outerHTML = ""
 }

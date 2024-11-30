@@ -14,7 +14,6 @@ class ChatsConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(f"group_chatlist_{self.scope["user"].id}", self.channel_name)
         await self.accept()
 
-
     @staticmethod
     def redefine_chats(user_ids):
         channel_layer = get_channel_layer()
@@ -35,15 +34,13 @@ class ChatsConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"websocket_message": event["text"]}))
 
 
-
 class MessagesConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.channel_layer.group_add(f"group_messages_{self.scope["user"].id}", self.channel_name)
         await self.accept()
 
-
     @staticmethod
-    def redefine_messages(new_message,  user_ids):
+    def redefine_messages(new_message, user_ids):
         channel_layer = get_channel_layer()
 
         for user_id in user_ids:
@@ -57,19 +54,25 @@ class MessagesConsumer(AsyncWebsocketConsumer):
                 },
             )
 
-
-
     async def delete_message(self, text_data_json):
         try:
             await ChatsListPageBL.delete_message(text_data_json, self.scope["user"].id)
         except Message.DoesNotExist as e:
+            print(e)
             return
+        channel_layer = get_channel_layer()
+        await channel_layer.group_send(
+            f"group_messages_{self.scope["user"].id}",
+            {
+                "type": "chat_message",
+                "text": {
+                    "message_type": "delete_message",
+                    "message_id": text_data_json["message_id"]
+                }
+            },
+        )
 
-        await self.send(text_data=json.dumps({"websocket_message": {
-            "message_type": "delete_message",
-            "message_id": text_data_json["message_id"]
-        }}))
-
+        print("DELETE MESSAGE websocket_message SEND")
 
     async def receive(self, text_data=None, bytes_data=None):
         text_data_json = json.loads(text_data)
@@ -77,7 +80,6 @@ class MessagesConsumer(AsyncWebsocketConsumer):
             await self.delete_message(text_data_json)
         elif text_data_json["message_type"] == "send_message":
             await sync_to_async(ChatsListPageBL.send_message)(text_data_json, self.scope["user"].id)
-
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({"websocket_message": event["text"]}))

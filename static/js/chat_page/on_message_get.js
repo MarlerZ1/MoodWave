@@ -1,5 +1,5 @@
 socket.onmessage = function (event){
-
+    console.log("socket.onmessage ")
     let djangoData = JSON.parse(event.data)
     message = djangoData.websocket_message
 
@@ -11,6 +11,7 @@ socket.onmessage = function (event){
             add_new_message(message)
             break;
         case "delete_message":
+            console.log("delete_message signal get")
             delete_message_handler(message.message_id)
             break;
     }

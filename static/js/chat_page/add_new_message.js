@@ -1,7 +1,6 @@
 add_new_message = function(message) {
     let div = document.querySelector("#list")
     let new_msg = ""
-
     if (message.from_me){
         new_msg = from_me_msg
         new_msg = new_msg.replace("basicClass", "col-md-2 text-end")
