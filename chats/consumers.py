@@ -10,7 +10,7 @@ from chats.models import UserInChat, Message
 
 class ChatsConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print(f"group_{self.scope["user"].id}")
+        print(f"user: {self.scope["user"]}, group_{self.scope["user"].id}")
         await self.channel_layer.group_add(f"group_chatlist_{self.scope["user"].id}", self.channel_name)
         await self.accept()
 
@@ -33,7 +33,6 @@ class ChatsConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({"websocket_message": event["text"]}))
-        print(json.dumps({"websocket_message": event["text"]}))
 
 
 
@@ -82,4 +81,3 @@ class MessagesConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps({"websocket_message": event["text"]}))
-        print(json.dumps({"websocket_message": event["text"]}))
