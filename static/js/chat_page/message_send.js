@@ -34,6 +34,5 @@ $('#submit_btn').click(function () {
             images_data: images
          }));
      })
-
-    document.getElementById("id_text").value = ""
+    message_form[0].reset()
 });
