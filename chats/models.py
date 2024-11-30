@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 from authorization.models import User
 
@@ -55,3 +57,9 @@ class AttachmentImage(models.Model):
 
         from chats.consumers import MessagesConsumer
         MessagesConsumer.redefine_messages(self.message, user_ids)
+
+
+@receiver(pre_delete, sender=AttachmentImage)
+def delete_related_file(sender, instance, **kwargs):
+    if instance.image:
+        instance.image.delete(save=False)
