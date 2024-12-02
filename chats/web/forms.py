@@ -54,3 +54,5 @@ class TextInputForm(forms.Form):
             )
 
             attachment_image.save(user_ids=user_ids)
+        else:
+            message.save(has_attach_image=False, user_ids=user_ids)
