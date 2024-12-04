@@ -33,33 +33,13 @@
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
 
-
 <script>
+    let standart_logo = "{% static 'img/default_logo.png' %}"
 
-    alert("5")
-    let socket = new WebSocket(`ws://${window.location.host}/chats/test/`)
-
-    socket.onmessage = function (event){
-        let div = document.querySelector("#list")
-        let djangoData = JSON.parse(event.data)
-        let standart_logo = "{% static 'img/default_logo.png' %}"
-
-        div.innerHTML = ""
-        console.log(djangoData)
-        for (const i in djangoData.websocket_message){
-
-            newElement =  `{% include 'chats/chat_list_page/chat_element.html' %}`
-
-            chat = djangoData.websocket_message.at(i)
-
-            newElement = newElement.replace("BasicCardTitlePlace", chat.name)
-            newElement = newElement.replace("BasicCardTextPlace", chat.message_text)
-            newElement = newElement.replace(standart_logo, chat.logo)
-            div.innerHTML += newElement
-        }
-
-    }
+    let basicElement = `{% include 'chats/chat_list_page/chat_element.html' %}`
 </script>
+<script src="{% static 'js/chats/chat_list/socket_connect.js'%}"></script>
+<script src="{% static 'js/chats/chat_list/chats_redefine.js'%}"></script>
 
 </body>
 </html>
