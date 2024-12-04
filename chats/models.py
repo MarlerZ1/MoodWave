@@ -2,8 +2,7 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
-from authorization.models import User
-
+from users.models import User
 
 CHAT = 0
 DIALOGUE = 1
@@ -28,6 +27,9 @@ class ChatInfo(models.Model):
 class UserInChat(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)
     chat = models.ForeignKey(to=Chat, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'chat')
 
 class Message(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE)

@@ -5,7 +5,7 @@ from channels.middleware import BaseMiddleware
 from django.contrib.auth.models import AnonymousUser
 
 from MoodWave import settings
-from authorization.models import User
+from users.models import User
 
 
 class CombinedAuthMiddleware:
