@@ -72,7 +72,9 @@ class ChatsListPageBL:
         couples = []
 
         for chat in chats:
-            couples += [(chat, Message.objects.filter(chat_id=chat.id).last())]
+            last_msg = Message.objects.filter(chat_id=chat.id).last()
+            if last_msg:
+                couples += [(chat, last_msg)]
 
         couples = sorted(couples, key=lambda x: x[1].sending_time, reverse=True)
 

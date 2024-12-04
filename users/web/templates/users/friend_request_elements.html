@@ -6,7 +6,7 @@
     <div class="card-body m-0 p-0 pt-3">
         <h6 class="card-title">{{ friend.first_name }} {{ friend.last_name }}</h6>
         <div>
-            <a href="{% url 'chats:web:chat' %}"><p>Написать сообщение <i class="bi bi-chat-dots"></i></p></a>
+            <a href="{% url 'users:web:redirect_to_chat' friend.id %}"><p>Написать сообщение <i class="bi bi-chat-dots"></i></p></a>
         </div>
     </div>
 </div>
