@@ -14,18 +14,18 @@
 
 <div class="col-md-2 text-center accept_wrapper_block">
     <div class="mt-1">
-        <form id="accept_form">
+        <form id="accept_form m-3">
             {% csrf_token %}
-            <i class="bi bi-check-circle accept_btn" style="font-size: 48px;" id="{{friend.id}}"></i>
+            <i class="bi bi-check-circle accept_btn" style="font-size: 48px; cursor: pointer; padding: 0 8px;" id="{{friend.id}}"></i>
         </form>
     </div>
 </div>
 
 <div class="col-md-2 text-center">
     <div class="mt-1">
-        <form id="delete_form">
+        <form id="delete_form m-3">
             {% csrf_token %}
-            <i class="bi bi-trash delete_btn" style="font-size: 48px;" id="{{friend.id}}"></i>
+            <i class="bi bi-trash delete_btn" style="font-size: 48px; cursor: pointer; padding: 0 8px;" id="{{friend.id}}"></i>
         </form>
     </div>
 </div>

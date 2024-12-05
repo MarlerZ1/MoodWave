@@ -13,7 +13,8 @@
                 <div class="card-body m-0 p-0 pt-3">
                     <h6 class="card-title">{{ friend.first_name }} {{ friend.last_name }}</h6>
                     <div>
-                        <a href="{% url 'users:web:redirect_to_chat' friend.id %}"><p>Написать сообщение <i class="bi bi-chat-dots"></i></p></a>
+                        <a href="{% url 'users:web:redirect_to_chat' friend.id %}"><p>Написать сообщение <i
+                                class="bi bi-chat-dots"></i></p></a>
                     </div>
                 </div>
             </div>
@@ -23,12 +24,22 @@
                 <div class="mt-1">
                     <form id="delete_form">
                         {% csrf_token %}
-                        <i class="bi bi-trash delete_btn" style="font-size: 48px;" id="{{friend.id}}"></i>
+                        <i class="bi bi-trash delete_btn" style="font-size: 48px; cursor: pointer; padding: 0 8px;"
+                           id="{{friend.id}}"></i>
                     </form>
                 </div>
             </div>
         {% endblock %}
     </div>
 </div>
+
+<style>
+    .delete_btn:hover,
+    .accept_btn:hover{
+        transition: background-color 0.4s ease;
+        background-color: #eeeeee;
+        border-radius: 0.16em;
+    }
+</style>
 
 
