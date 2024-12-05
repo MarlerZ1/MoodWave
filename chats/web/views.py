@@ -5,23 +5,25 @@ from django.views.generic import ListView
 from chats.business_logic import ChatsListPageBL, MessagesPageBL
 from chats.web.forms import TextInputForm
 from chats.models import UserInChat, Message
+from common.mixins.title_mixin import TitleMixin
 
 
 # Create your views here.
 
-class ChatsView(LoginRequiredMixin, ListView):
+class ChatsView(TitleMixin, LoginRequiredMixin, ListView):
     model = UserInChat
     template_name = 'chats/chat_list_page/chat_list.html'
     login_url = reverse_lazy('authorization:web:login')
-
+    title = "Chat List — MoodWave"
     def get_queryset(self):
 
         return  ChatsListPageBL.get_chats(super(ChatsView, self).get_queryset(), self.request.user.id)
 
-class MessagesView(LoginRequiredMixin, ListView):
+class MessagesView(TitleMixin, LoginRequiredMixin, ListView):
     model = Message
     template_name = 'chats/chat/chat.html'
     login_url = reverse_lazy('authorization:web:login')
+    title = "Chat — MoodWave"
 
     def get_queryset(self):
 

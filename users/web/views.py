@@ -8,14 +8,15 @@ from django.views.generic import TemplateView
 
 from chats import models as chats_models
 from chats.models import UserInChat, Chat
+from common.mixins.title_mixin import TitleMixin
 from users import models as find_request_models
 from users.models import FriendRequest
 
 
 # Create your views here.
-class FriendListView(LoginRequiredMixin, TemplateView):
+class FriendListView(TitleMixin, LoginRequiredMixin, TemplateView):
     template_name = "users/friend_list.html"
-
+    title = "Friend List — MoodWave"
     def get_context_data(self):
         context = super(FriendListView, self).get_context_data()
 
