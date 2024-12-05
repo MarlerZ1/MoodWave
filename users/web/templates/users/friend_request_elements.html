@@ -16,7 +16,7 @@
     <div class="mt-1">
         <form id="accept_form">
             {% csrf_token %}
-            <i class="bi bi-check-circle accept_btn" style="font-size: 48px;" id="accept_{{friend.id}}"></i>
+            <i class="bi bi-check-circle accept_btn" style="font-size: 48px;" id="{{friend.id}}"></i>
         </form>
     </div>
 </div>
@@ -25,7 +25,7 @@
     <div class="mt-1">
         <form id="delete_form">
             {% csrf_token %}
-            <i class="bi bi-trash delete_btn" style="font-size: 48px;" id="delete_{{friend.id}}"></i>
+            <i class="bi bi-trash delete_btn" style="font-size: 48px;" id="{{friend.id}}"></i>
         </form>
     </div>
 </div>

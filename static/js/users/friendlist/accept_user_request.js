@@ -1,11 +1,12 @@
-$('.accept_btn').click(function () {
+let send_access_form_ajax = function() {
+
         let formElement = $('#accept_form')[0];
         let formData = new FormData(formElement);
         let current_obj =  $(this)
 
         $.ajax({
             type: "post",
-            url: accept_relationship_url + $(this).attr('id').replace("accept_",""),
+            url: accept_relationship_url + $(this).attr('id'),
             data: formData,
             success: function(data){
                 if (data["status"] == "success")
@@ -15,8 +16,9 @@ $('.accept_btn').click(function () {
                     card.find(".resized_part").removeClass('col-md-6').addClass('col-md-8')
 
 
-                    $("#accepted_list_object")[0].outerHTML += card[0].outerHTML
+                    $("#accepted_list_object")[0].insertAdjacentHTML("beforeend", card[0].outerHTML)
                     card[0].outerHTML = ""
+                    $('.delete_btn').last().click(send_reject_form_ajax)
 
                     if ($("#waiting_list_objects").children().length === 0)
                     {
@@ -27,4 +29,6 @@ $('.accept_btn').click(function () {
             contentType: false,
             processData: false,
         });
-    })
+}
+
+$('.accept_btn').click(send_access_form_ajax)
