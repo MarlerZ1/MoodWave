@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponseRedirect
@@ -12,7 +13,7 @@ from users.models import FriendRequest
 
 
 # Create your views here.
-class FriendListView(TemplateView):
+class FriendListView(LoginRequiredMixin, TemplateView):
     template_name = "users/friend_list.html"
 
     def get_context_data(self):
@@ -39,7 +40,7 @@ class FriendListView(TemplateView):
         return context
 
 
-class RejectUser(View):
+class RejectUser(LoginRequiredMixin, View):
     def post(self, request, friend_id):
         relationship = FriendRequest.objects.get(
             Q(sender=self.request.user, receiver_id=friend_id) |
@@ -59,7 +60,7 @@ class RejectUser(View):
         })
 
 
-class AcceptUser(View):
+class AcceptUser(LoginRequiredMixin, View):
     def post(self, request, friend_id):
         relationship = FriendRequest.objects.get(
             Q(sender=self.request.user, receiver_id=friend_id) |
@@ -79,7 +80,7 @@ class AcceptUser(View):
         })
 
 
-class RedirectToChat(View):
+class RedirectToChat(LoginRequiredMixin, View):
     def get(self, request, friend_id):
         logined_user_chats_rs = UserInChat.objects.filter(user=self.request.user)
 
