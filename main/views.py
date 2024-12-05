@@ -5,7 +5,7 @@ from django.views import View
 
 # Create your views here.
 class MainView(View):
-    def get(self):
+    def get(self, request):
         if self.request.user.is_authenticated:
             return HttpResponseRedirect(reverse("chats:web:chat_list"))
         return HttpResponseRedirect(reverse("authorization:web:login"))
