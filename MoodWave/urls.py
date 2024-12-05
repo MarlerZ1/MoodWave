@@ -24,6 +24,7 @@ urlpatterns = [
     path('authorization/', include('authorization.urls', namespace='authorization')),
     path('chats/', include('chats.urls', namespace='chats')),
     path('users/', include('users.urls', namespace='users')),
+    path('', include('main.urls', namespace='main')),
 ]
 
 if settings.DEBUG:
