@@ -3,10 +3,15 @@ let send_access_form_ajax = function() {
         let formElement = $('#accept_form')[0];
         let formData = new FormData(formElement);
         let current_obj =  $(this)
-
+        let obj_id = $(this).attr('id')
+        console.log("SEND ACCEPT AJAX")
+        if (!formElement) {
+            console.error("Форма с ID 'accept_form' не найдена!");
+            return;
+        }
         $.ajax({
             type: "post",
-            url: accept_relationship_url + $(this).attr('id'),
+            url: accept_relationship_url + obj_id,
             data: formData,
             success: function(data){
                 if (data["status"] == "success")
@@ -18,7 +23,18 @@ let send_access_form_ajax = function() {
 
                     $("#accepted_list_object")[0].insertAdjacentHTML("beforeend", card[0].outerHTML)
                     card[0].outerHTML = ""
-                    $('.delete_btn').last().click(send_reject_form_ajax)
+                    let added_object = $("#accepted_list_object").children(':last-child')
+
+                    if (!added_object.find(".reject_btn")[0])
+                    {
+                        let tempContainer = $('<div>').html(reject_part);
+                        tempContainer.find('.reject_btn').attr('id', obj_id);
+                        let updatedHtmlString = tempContainer.html();
+
+                        added_object.find('.resized_part:last')[0].insertAdjacentHTML("afterend", updatedHtmlString)
+                    }
+
+                    added_object.find('.reject_btn:last').click(send_reject_form_ajax)
 
                     if ($("#waiting_list_objects").children().length === 0)
                     {

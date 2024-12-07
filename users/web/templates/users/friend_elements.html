@@ -9,7 +9,7 @@
 
 
         {% block 'intercations' %}
-            <div class="col-md-8 m-0 p-0 ">
+            <div class="col-md-8 m-0 p-0 resized_part">
                 <div class="card-body m-0 p-0 pt-3">
                     <h6 class="card-title">{{ friend.first_name }} {{ friend.last_name }}</h6>
                     <div>
@@ -20,26 +20,9 @@
             </div>
 
 
-            <div class="col-md-2 text-center">
-                <div class="mt-1">
-                    <form id="delete_form">
-                        {% csrf_token %}
-                        <i class="bi bi-trash delete_btn" style="font-size: 48px; cursor: pointer; padding: 0 8px;"
-                           id="{{friend.id}}"></i>
-                    </form>
-                </div>
-            </div>
+            {% include 'users/parts/reject_part.html'%}
         {% endblock %}
     </div>
 </div>
-
-<style>
-    .delete_btn:hover,
-    .accept_btn:hover{
-        transition: background-color 0.4s ease;
-        background-color: #eeeeee;
-        border-radius: 0.16em;
-    }
-</style>
 
 

@@ -21,22 +21,32 @@ class FriendListView(TitleMixin, LoginRequiredMixin, TemplateView):
         context = super(FriendListView, self).get_context_data()
 
         context["pending_to"] = []
+        context["pending_from"] = []
         context["accepted"] = []
+        context["rejected"] = []
+
 
         friend_request_from = FriendRequest.objects.filter(sender_id=self.request.user.id)
 
         for relation in friend_request_from:
-            if relation.status == find_request_models.ACCEPTED:
-                context["accepted"] += [relation.receiver]
+            match relation.status:
+                case find_request_models.ACCEPTED:
+                    context["accepted"] += [relation.receiver]
+                case find_request_models.PENDING:
+                    context["pending_to"] += [relation.receiver]
+                case find_request_models.REJECTED:
+                    context["rejected"] += [relation.receiver]
 
         friend_request_to = FriendRequest.objects.filter(receiver_id=self.request.user.id)
 
         for relation in friend_request_to:
-            if relation.status == find_request_models.PENDING:
-                context["pending_to"] += [relation.sender]
-
-            if relation.status == find_request_models.ACCEPTED:
-                context["accepted"] += [relation.sender]
+            match relation.status:
+                case find_request_models.PENDING:
+                    context["pending_from"] += [relation.sender]
+                case find_request_models.ACCEPTED:
+                    context["accepted"] += [relation.sender]
+                case find_request_models.REJECTED:
+                    context["rejected"] += [relation.sender]
 
         return context
 
@@ -105,3 +115,21 @@ class RedirectToChat(LoginRequiredMixin, View):
             UserInChat(user_id=friend_id, chat=new_chat).save()
 
         return HttpResponseRedirect(reverse("chats:web:chat", args=[new_chat.id]))
+
+
+class DeleteRequest(View):
+    def post(self, request, friend_id):
+        relationship = FriendRequest.objects.get(
+            Q(sender=self.request.user, receiver_id=friend_id) |
+            Q(receiver=self.request.user, sender_id=friend_id)
+        )
+
+        if relationship:
+            relationship.delete()
+
+            return JsonResponse({
+                "status": "success"
+            })
+        return JsonResponse({
+            "status": "error"
+        })
