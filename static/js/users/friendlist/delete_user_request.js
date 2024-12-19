@@ -8,10 +8,7 @@ let send_delete_form_ajax = function() {
             data: formData,
             success: function(data){
                 if (data["status"] == "success"){
-//                    current_obj.closest(".card")[0].outerHTML = ""
                     pending_obj = $("#pending_to_list_objects").find('#' + current_obj.attr('id'))
-
-
 
                     if (pending_obj.length > 0)
                         pending_obj.closest(".card")[0].outerHTML = ""

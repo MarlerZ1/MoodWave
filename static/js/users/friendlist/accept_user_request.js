@@ -16,10 +16,6 @@ let send_access_form_ajax = function() {
             success: function(data){
                 if (data["status"] == "success")
                 {
-//                    let card = current_obj.closest(".card")
-//                    card.find(".accept_wrapper_block").remove()
-//                    card.find(".resized_part").removeClass('col-md-6').addClass('col-md-8')
-
                     let card = current_obj.closest(".card")
 
                     new_template = accept_block
@@ -40,22 +36,6 @@ let send_access_form_ajax = function() {
                     rejected_list_objects = $("#rejected_list_objects").find('#' +added_object.find(".reject_btn").attr("id"))
                     if (rejected_list_objects.length > 0)
                         rejected_list_objects.closest(".card")[0].outerHTML = ""
-
-
-//                    $("#accepted_list_object")[0].insertAdjacentHTML("beforeend", card[0].outerHTML)
-//                    card[0].outerHTML = ""
-//                    let added_object = $("#accepted_list_object").children(':last-child')
-//
-//                    if (!added_object.find(".reject_btn")[0])
-//                    {
-//                        let tempContainer = $('<div>').html(reject_part);
-//                        tempContainer.find('.reject_btn').attr('id', obj_id);
-//                        let updatedHtmlString = tempContainer.html();
-//
-//                        added_object.find('.resized_part:last')[0].insertAdjacentHTML("afterend", updatedHtmlString)
-//                    }
-//
-//                    added_object.find('.reject_btn:last').click(send_reject_form_ajax)
 
                     if ($("#waiting_list_objects").children().length === 0)
                     {
