@@ -10,12 +10,15 @@ from chats import models as chats_models
 from chats.models import UserInChat, Chat
 from common.mixins.title_mixin import TitleMixin
 from users import models as find_request_models
-from users.models import FriendRequest
+from users.filters import UserFilter
+from users.models import FriendRequest, User
+from users.serializers import UserSearchSerializer
+from users.web.forms import UserSearchForm
 
 
 # Create your views here.
 class FriendListView(TitleMixin, LoginRequiredMixin, TemplateView):
-    template_name = "users/friend_list.html"
+    template_name = "users/friend_list_page/friend_list.html"
     title = "Friend List — MoodWave"
     def get_context_data(self):
         context = super(FriendListView, self).get_context_data()
@@ -47,6 +50,8 @@ class FriendListView(TitleMixin, LoginRequiredMixin, TemplateView):
                     context["accepted"] += [relation.sender]
                 case find_request_models.REJECTED:
                     context["rejected"] += [relation.sender]
+
+        context["user_search_form"] = UserSearchForm()
 
         return context
 
@@ -117,7 +122,7 @@ class RedirectToChat(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse("chats:web:chat", args=[new_chat.id]))
 
 
-class DeleteRequest(View):
+class DeleteRequest(LoginRequiredMixin, View):
     def post(self, request, friend_id):
         relationship = FriendRequest.objects.get(
             Q(sender=self.request.user, receiver_id=friend_id) |
@@ -133,3 +138,60 @@ class DeleteRequest(View):
         return JsonResponse({
             "status": "error"
         })
+
+class SearchUser(LoginRequiredMixin, View):
+    def get(self, request):
+        user_filter = UserFilter(request.GET, queryset=User.objects.all())
+
+        finded_users =  user_filter.qs
+        couples = []
+        if finded_users:
+            for user in finded_users:
+                if user.id == request.user.id:
+                    continue
+
+                user_js = UserSearchSerializer(user).data
+
+                try:
+                    from_me_request = FriendRequest.objects.get(sender=request.user.id, receiver_id=user.id)
+
+                    match from_me_request.status:
+                        case find_request_models.ACCEPTED:
+                            couples += [(user_js, "accept")]
+                        case find_request_models.PENDING:
+                            couples += [(user_js, "pending")]
+                except FriendRequest.DoesNotExist:
+                    try:
+                        to_me_request = FriendRequest.objects.get(receiver=request.user.id,sender=user.id)
+
+                        match to_me_request.status:
+                            case find_request_models.ACCEPTED:
+                                couples += [(user_js, "accept")]
+                            case find_request_models.PENDING:
+                                couples += [(user_js, "waiting")]
+                            case find_request_models.REJECTED:
+                                couples += [(user_js, "rejected")]
+                    except FriendRequest.DoesNotExist:
+                        couples += [(user_js, "invite")]
+            print(couples)
+        return JsonResponse({
+            'status': 'success',
+            'filter': couples
+        })
+
+
+
+class InviteUser(LoginRequiredMixin, View):
+    def post(self, request, friend_id):
+        try:
+            new_request = FriendRequest(sender=request.user, receiver_id=friend_id)
+
+            new_request.save()
+            return JsonResponse({
+                'status': 'success',
+            })
+        except BaseException as e:
+            print(e)
+            return JsonResponse({
+                "status": "error"
+            })

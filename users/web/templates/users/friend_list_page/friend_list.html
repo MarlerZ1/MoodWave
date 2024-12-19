@@ -1,0 +1,296 @@
+{% extends 'main/template_with_side_menu.html'%}
+{% load static %}
+
+{% block content %}
+
+<form method="get" id="search_form" style="position: relative; z-index: 1200;">
+    <div class="container pe-1 pt-1 ps-1 m-0">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group dropdown">
+                    {% csrf_token %}
+                    {{user_search_form.search_field}}
+
+
+                    <button type="button" class="btn btn-success ms-1 rounded-end" id="search_btn"
+                            data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-send"></i>
+                    </button>
+
+
+                    <ul class="dropdown-menu w-100 p-0" id="userList" aria-labelledby="search_btn"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<h3 class="text-center">Список ваших друзей</h3>
+
+<div id="accepted_list_object">
+    {% for friend in accepted %}
+    {% include 'users/friend_list_page/big/friend_elements.html' %}
+    {% empty %}
+    <p class="text-center">У вас все еще нет друзей (</p>
+    {% endfor %}
+</div>
+
+
+<h3 class="text-center">Заявки</h3>
+
+<ul class="nav nav-tabs" id="userTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="pending-from-requests-tab" data-bs-toggle="tab" href="#pending-from-requests"
+           role="tab"
+           aria-selected="true">Ожидающие</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="pending-to-requests-tab" data-bs-toggle="tab" href="#pending-to-requests" role="tab"
+           aria-selected="false">Отправленные</a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="rejected-requests-tab" data-bs-toggle="tab" href="#rejected-requests" role="tab"
+           aria-selected="false">Отклоненные</a>
+    </li>
+</ul>
+
+
+<div class="tab-content mt-3" id="userTabsContent">
+    <div class="tab-pane fade show active" id="pending-from-requests" role="tabpanel"
+         aria-labelledby="pending-from-requests-tab">
+        <div id="waiting_list_objects">
+            {% for friend in pending_from %}
+            {% include 'users/friend_list_page/big/friend_request_elements.html' %}
+            {% empty %}
+            <p class="text-center">У вас нет заявок в друзья (</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="tab-pane fade show" id="pending-to-requests" role="tabpanel" aria-labelledby="pending-to-requests-tab">
+        <div id="pending_to_list_objects">
+            {% for friend in pending_to %}
+            {% include 'users/friend_list_page/big/pending_request_elements.html' %}
+            {% empty %}
+            <p class="text-center">У вас нет исходящих заявок</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="tab-pane fade show" id="rejected-requests" role="tabpanel" aria-labelledby="rejected-requests-tab">
+        <div id="rejected_list_objects">
+            {% for friend in rejected %}
+            {% include 'users/friend_list_page/big/rejected_request_elements.html' %}
+            {% empty %}
+            <p class="text-center">Нет отклоненных заявок</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .delete_btn:hover,
+        .reject_btn:hover,
+        .accept_btn:hover{
+            transition: background-color 0.4s ease;
+            background-color: #eeeeee;
+            border-radius: 0.16em;
+        }
+
+
+        #dropdownBackdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+        }
+
+
+        .fade_cst {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .fade_cst.show_cst {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+
+</div>
+
+<div id="dropdownBackdrop" class="fade_cst"></div>
+{% endblock %}
+
+{% block scripts%}
+
+
+
+<script>
+    reject_relationship_url = "{% url 'users:web:reject_friend' 0 %}".slice(0, -1)
+    accept_relationship_url = "{% url 'users:web:accept_friend' 0 %}".slice(0, -1)
+    delete_relationship_url = "{% url 'users:web:delete_request' 0 %}".slice(0, -1)
+    invite_relationship_url = "{% url 'users:web:invite_request' 0 %}".slice(0, -1)
+    search_user_url = "{% url 'users:web:search_request' %}"
+    redirect_to_chat_url = "{% url 'users:web:redirect_to_chat' 0 %}".slice(0, -1)
+
+    let accept_part = `{% include 'users//friend_list_page/big/parts/accept_part.html'%}`
+    let reject_part = `{% include 'users/friend_list_page/big/parts/reject_part.html'%}`
+
+    let accept_block = `{% include 'users/friend_list_page/big/friend_elements.html' %}`
+    let reject_block = `{% include 'users/friend_list_page/big/rejected_request_elements.html' %}`
+
+
+    let invite_part = `{% include 'users/friend_list_page/small/parts/invite_part.html'%}`
+    let delete_part_small = `{% include 'users/friend_list_page/small/parts/delete_part.html'%}`
+
+    let delete_friend_small = `{% include 'users/friend_list_page/small/delete_friend_small.html'%}`
+    let reject_friend_small = `{% include 'users/friend_list_page/small/reject_friend_small.html'%}`
+    let accept_friend_small = `{% include 'users/friend_list_page/small/accept_friend_small.html'%}`
+    let invite_friend_small = `{% include 'users/friend_list_page/small/invite_friend_small.html'%}`
+    let waiting_friend_small = `{% include 'users/friend_list_page/small/waiting_friend_small.html'%}`
+
+    let pending_request_elements = `{% include 'users/friend_list_page/big/pending_request_elements.html'%}`
+
+    let send_invite_form_ajax = function() {
+            console.log("send_invite")
+        let formElement = $('#delete_form')[0];
+        let formData = new FormData(formElement);
+        let current_obj =  $(this)
+        $.ajax({
+            type: "post",
+            url: invite_relationship_url + $(this).attr('id'),
+            data: formData,
+            success: function(data){
+                if (data["status"] == "success"){
+                    if ($("#pending_to_list_objects").find('p:contains("У вас нет исходящих заявок")').length > 0)
+                        $("#pending_to_list_objects").find('p:contains("У вас нет исходящих заявок")')[0].outerHTML = ""
+
+                    names = current_obj.closest(".card").find('h6.card-title')[0].innerHTML
+                    logo_src = current_obj.closest(".card").find('img').attr('src')
+                    href = current_obj.closest(".card").find('a').attr('href')
+
+                    new_part = delete_part_small
+
+                    current_card = current_obj.closest(".card")
+                    current_card.find(".reject_wrapper_block")[0].outerHTML = new_part.replace("some_id", current_obj.attr('id'))
+                    current_card.find('.delete_btn').last().on('click', send_delete_form_ajax);
+
+                    template = $(pending_request_elements)
+                    template.find('h6.card-title').text(names);
+                    template.find('img').attr('src', logo_src);
+                    template.find('a').attr('href', href);
+                    template.find('.delete_btn').attr('id', current_obj.attr('id'));
+                    $("#pending_to_list_objects")[0].insertAdjacentHTML("beforeend",  template[0].outerHTML);
+
+                    $("#pending_to_list_objects").find(".delete_btn").last().on('click', send_delete_form_ajax);
+                }
+
+            },
+            contentType: false,
+            processData: false,
+        });
+    }
+
+
+
+
+    const dropdownWrapper = $('.dropdown');
+    let user_modal_list = $("#userList")
+    let search_form = $("#search_form")
+
+    let send_search_request = function () {
+        let formData = new FormData(search_form[0])
+
+        const formObject = Object.fromEntries(formData.entries());
+        const queryString = $.param(formObject);
+
+         $.ajax({
+            type: "get",
+            url: search_user_url,
+            data: queryString,
+            success: function(data){
+                if (data["status"] == "success")
+                {
+                    console.log(data["filter"])
+                    user_modal_list.empty()
+                    data["filter"].forEach(couple => {
+                        if (couple[1] == "pending")
+                            template = delete_friend_small
+                        else if (couple[1] == "accept")
+                            template = accept_friend_small
+                        else if (couple[1] == "rejected")
+                            template = reject_friend_small
+                        else if (couple[1] == "invite")
+                            template = invite_friend_small
+                        else if (couple[1] == "waiting")
+                            template = waiting_friend_small
+
+                        final_template = template.replace("first_name", couple[0].first_name).replace("last_name", couple[0].last_name).replace("some_id", couple[0].id).replace("some_id", couple[0].id).replace('href', 'href="' + redirect_to_chat_url + couple[0].id + '"')
+                        user_modal_list[0].insertAdjacentHTML("beforeend", final_template);
+
+
+                        if (couple[1] == "pending")
+                             user_modal_list.find('.delete_btn').last().on('click', send_delete_form_ajax);
+                        else if (couple[1] == "accept")
+                            user_modal_list.find('.reject_btn').last().on('click', send_reject_form_ajax);
+                        else if (couple[1] == "rejected")
+                            user_modal_list.find('.accept_btn').last().on('click', send_access_form_ajax);
+                        else if (couple[1] == "invite")
+                            user_modal_list.find('.invite_btn').last().on('click', send_invite_form_ajax);
+                        else if (couple[1] == "waiting"){
+                            user_modal_list.find('.accept_btn').last().on('click', send_access_form_ajax);
+                            user_modal_list.find('.reject_btn').last().on('click', send_reject_form_ajax);
+                        }
+
+
+
+                    });
+                }
+            },
+            contentType: false,
+            processData: false,
+        });
+    }
+
+
+    search_form.on('submit', function(event) {
+        event.preventDefault();
+        send_search_request()
+    });
+
+    $('#search_btn').click(function(){
+        send_search_request();
+
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        console.log(isExpanded)
+        if (isExpanded) {
+            $('#dropdownBackdrop').addClass('show_cst');
+        } else {
+            $('#dropdownBackdrop').removeClass('show_cst');
+        }
+    });
+
+    dropdownWrapper.click(function(event) {
+        event.stopPropagation();
+    });
+
+$('#dropdownBackdrop').click(function(){
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        console.log(isExpanded)
+        if (!isExpanded) {
+            $('#dropdownBackdrop').removeClass('show_cst');
+            $('#search_btn')[0].setAttribute('aria-expanded', 'false');
+        }
+
+});
+
+</script>
+
+<script src="{% static 'js/users/friendlist/reject_user_request.js'%}"></script>
+<script src="{% static 'js/users/friendlist/accept_user_request.js'%}"></script>
+<script src="{% static 'js/users/friendlist/delete_user_request.js'%}"></script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% load static %}
+<div class="card m-1">
+    <div class="row m-0 p-0">
+        <div class="col-md-1">
+            <img src="{% static 'img/default_logo.png' %}"
+                 class="rounded" alt="..." width="32px" height="32px"
+                 style="margin-left: auto; margin-right: 0; margin: 8px 0">
+        </div>
+
+            <div class="col-md-9 m-0 p-0 ps-1">
+                <div class="card-body m-0 p-0 pt-1">
+                    <h6 class="card-title p-0 m-0">first_name last_name</h6>
+                    <div>
+                        <a href=""><p style="font-size: 0.75rem;" class="p-0 m-0">Написать сообщение <i class="bi bi-chat-dots"></i></p></a>
+                    </div>
+                </div>
+            </div>
+
+            {% block 'small_icon_parts' %}
+            {% endblock %}
+    </div>
+</div>
+
+
